@@ -7,12 +7,12 @@ const initialState = {
   formValues: {}
 }
 
-const rootReducer = (state = initialState, action) => {
-  switch (action.type) {
+const rootReducer = (state = initialState, { payload, type } = action) => {
+  switch (type) {
     case SET_FORM_DATA:
-      return { ...state, formData: action.payload }
+      return { ...state, formData: payload }
     case SET_FORM_VALUES:
-      return { ...state, formValues: action.payload }
+      return { ...state, formValues: { ...state.formValues, [payload.formField]: payload.formValue } }
     default:
       return state
   }

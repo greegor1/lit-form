@@ -6,7 +6,7 @@ export const setFormData = (formData) => ({
   payload: formData
 })
 
-export const setFormValue = (formValues) => ({
+export const setFormValue = (formField, formValue) => ({
   type: SET_FORM_VALUES,
-  payload: formValues
+  payload: { formField, formValue }
 })

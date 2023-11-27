@@ -1,5 +1,4 @@
 import { html, css } from 'lit'
-import { renderFormField } from './components/molecules/FormFactory/FormFactory'
 import store from './redux/store'
 import { fetchFormData } from './redux/thunks'
 import { validateField } from './validators/validateField'
@@ -8,6 +7,7 @@ import { setFormValue } from './redux/actions'
 import './components/services/http.service'
 import '@lion/ui/define/lion-button'
 import '@lion/ui/define/lion-form'
+import CustomFormElement from './components/molecules/CustomFormElement/CustomFormElement'
 
 class CustomForm extends ConnectedElement {
   static styles = css`
@@ -16,6 +16,10 @@ class CustomForm extends ConnectedElement {
       padding: 16px;
     }
   `
+
+  static scopedElements = {
+    'custom-form-element': CustomFormElement
+  }
 
   static get properties() {
     return {
@@ -55,15 +59,26 @@ class CustomForm extends ConnectedElement {
       <lion-form>
         ${Object.keys(currentPageData).map((fieldName) => {
           store.dispatch(setFormValue({ ...this.formValues, [fieldName]: '' }))
-          return renderFormField(fieldName, currentPageData[fieldName], this.formValues, this.updateFormValue)
+          return html`<custom-form-element .fieldName=${fieldName}></custom-form-element>`
         })}
-        <lion-button @click=${this.onSave}>Save</lion-button>
+        ${this.getButton()}
       </lion-form>
     `
   }
 
+  getButton() {
+    if (this.currentPage < this.formData.length - 1) {
+      return html`<lion-button @click=${this.onNextStep}>Next</lion-button>`
+    }
+    return html`<lion-button @click=${this.onSave}>Save</lion-button>`
+  }
+
   updateFormValue(fieldName, value) {
     this.formValues = { ...this.formValues, [fieldName]: value }
+  }
+
+  onNextStep() {
+    this.currentPage++
   }
 
   onSave() {
