@@ -1,20 +1,23 @@
-export const validateField = (fieldName, field) => {
+export const validateField = (fieldName, field, formValues) => {
   for (const validator of field.validators || []) {
     const [type, value] = validator.split(':')
+    const errors = []
     switch (type) {
       case 'required':
-        if (!this.formValues[fieldName]) {
-          this.errors.push({ field: fieldName, message: 'This field is required.' })
+        if (!formValues[fieldName]) {
+          errors.push({ field: fieldName, message: 'This field is required.' })
         }
         break
       case 'min-len':
-        if (this.formValues[fieldName].length < parseInt(value)) {
-          this.errors.push({
+        if (formValues[fieldName].length < parseInt(value)) {
+          errors.push({
             field: fieldName,
             message: `Minimum length is ${value} characters.`
           })
         }
         break
     }
+
+    return errors
   }
 }

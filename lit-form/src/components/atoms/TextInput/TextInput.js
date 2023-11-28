@@ -2,19 +2,27 @@ import { html } from 'lit'
 import '@lion/ui/define/lion-input'
 import ConnectedElement from '../../../helpers/ConnectedElement'
 import { setFormValue } from '../../../redux/actions'
+import store from '../../../redux/store'
 
-export default class CustomInput extends ConnectedElement {
-  static properties() {
-    return { fieldName: { type: String } }
+class CustomInput extends ConnectedElement {
+  static get properties() {
+    return { fieldName: { type: String }, validators: { type: Array } }
+  }
+  constructor() {
+    super()
   }
 
   render() {
+    const { formValues } = store.getState()
     return html`
       <lion-input
         label="${this.fieldName}"
-        .modelValue="${formValues[fieldName]}"
-        @model-value-changed="${(e) => dispatch(setFormValue(fieldName, e.detail.formPath[0].__formattedValue))}"
+        .modelValue="${formValues[this.fieldName]}"
+        @model-value-changed="${(e) => store.dispatch(setFormValue(this.fieldName, e.detail.formPath[0].__formattedValue))}"
+        .validators="${[this.validators]}"
       ></lion-input>
     `
   }
 }
+
+customElements.define('custom-input', CustomInput)

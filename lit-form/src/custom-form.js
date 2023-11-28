@@ -7,7 +7,7 @@ import { setFormValue } from './redux/actions'
 import './components/services/http.service'
 import '@lion/ui/define/lion-button'
 import '@lion/ui/define/lion-form'
-import CustomFormElement from './components/molecules/CustomFormElement/CustomFormElement'
+import './components/molecules/CustomFormElement/CustomFormElement'
 
 class CustomForm extends ConnectedElement {
   static styles = css`
@@ -17,8 +17,8 @@ class CustomForm extends ConnectedElement {
     }
   `
 
-  static scopedElements = {
-    'custom-form-element': CustomFormElement
+  static get scopedElements() {
+    return { 'custom-form-element': CustomFormElement }
   }
 
   static get properties() {
@@ -43,23 +43,23 @@ class CustomForm extends ConnectedElement {
   }
 
   stateChanged(state) {
-    console.log(state)
     this.formData = state.formData
     this.formValues = state.formValues
   }
 
   render() {
-    console.log('this.formData', this.formData)
     if (!this.formData || this.formData.length === 0) {
       return html`<div>Loading...</div>`
     }
 
     const currentPageData = this.formData[this.currentPage].form || []
+    const currentPageLabel = this.formData[this.currentPage].name || ''
     return html`
+      <h2>${currentPageLabel}</h2>
       <lion-form>
         ${Object.keys(currentPageData).map((fieldName) => {
           store.dispatch(setFormValue({ ...this.formValues, [fieldName]: '' }))
-          return html`<custom-form-element .fieldName=${fieldName}></custom-form-element>`
+          return html`<custom-form-element .fieldName=${fieldName} .fieldData=${currentPageData[fieldName]}></custom-form-element>`
         })}
         ${this.getButton()}
       </lion-form>
@@ -79,6 +79,11 @@ class CustomForm extends ConnectedElement {
 
   onNextStep() {
     this.currentPage++
+    const currentPageData = this.formData[this.currentPage].form
+    Object.keys(currentPageData).map((fieldName) => {
+      store.dispatch(setFormValue({ ...this.formValues, [fieldName]: '' }))
+    })
+    this.requestUpdate()
   }
 
   onSave() {
@@ -87,7 +92,7 @@ class CustomForm extends ConnectedElement {
     for (const pageData of this.formData) {
       for (const fieldName in pageData.form) {
         const field = pageData.form[fieldName]
-        validateField(fieldName, field)
+        this.errors.push(validateField(fieldName, field, this.formValues))
       }
     }
 

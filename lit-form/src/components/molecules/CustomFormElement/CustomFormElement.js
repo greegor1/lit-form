@@ -1,24 +1,17 @@
-import CustomInput from '../../atoms/TextInput/TextInput'
-import CustomTextarea from '../../atoms/TextareaInput/TextareaInput'
-import CustomSelect from '../../atoms/SelectInput/SelectInput'
-import CustomCheckbox from '../../atoms/CheckboxInput/CheckboxInput'
-import CustomRadioGroup from '../../atoms/RadioInput/RadioInput'
+import '../../atoms/TextInput/TextInput'
+import '../../atoms/TextareaInput/TextareaInput'
+import '../../atoms/SelectInput/SelectInput'
+import '../../atoms/CheckboxInput/CheckboxInput'
+import '../../atoms/RadioInput/RadioInput'
 import ConnectedElement from '../../../helpers/ConnectedElement'
+import { html } from 'lit'
 
-export default class CustomFormElement extends ConnectedElement {
+class CustomFormElement extends ConnectedElement {
   static get properties() {
     return {
       fieldName: { type: String },
       fieldData: { type: Object }
     }
-  }
-
-  static scopedElements = {
-    'custom-input': CustomInput,
-    'custom-textarea': CustomTextarea,
-    'custom-select': CustomSelect,
-    'custom-checkbox': CustomCheckbox,
-    'custom-radio-group': CustomRadioGroup
   }
 
   renderFormElement() {
@@ -28,15 +21,15 @@ export default class CustomFormElement extends ConnectedElement {
       switch (type) {
         case 'text':
         case 'number':
-          return html`<custom-input .fieldName=${this.fieldName}></custom-input>`
+          return html`<custom-input .fieldName=${this.fieldName} .validators=${validators}></custom-input>`
         case 'textarea':
-          return html`<custom-textarea .fieldName=${this.fieldName}></custom-textarea>`
+          return html`<custom-textarea .fieldName=${this.fieldName} .validators=${validators}></custom-textarea>`
         case 'select':
-          return html`<custom-select .fieldName=${this.fieldName}></custom-select>`
+          return html`<custom-select .fieldName=${this.fieldName} .dataset=${dataset} .validators=${validators}></custom-select>`
         case 'checkbox':
-          return html`<custom-checkbox .fieldName=${this.fieldName}></custom-checkbox>`
+          return html`<custom-checkbox .fieldName=${this.fieldName} .validators=${validators}></custom-checkbox>`
         case 'radio-group':
-          return html`<custom-radio-group .fieldName=${this.fieldName}></custom-radio-group>`
+          return html`<custom-radio-group .fieldName=${this.fieldName} .validators=${validators}></custom-radio-group>`
         default:
           return html``
       }
@@ -44,6 +37,8 @@ export default class CustomFormElement extends ConnectedElement {
   }
 
   render() {
-    return this.renderFormElement()
+    return html`${this.renderFormElement()}`
   }
 }
+
+customElements.define('custom-form-element', CustomFormElement)
